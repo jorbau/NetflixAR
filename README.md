@@ -5,7 +5,7 @@
 ### Preparación antes de ejecutar
 - Descomprimir carpeta images
 - Ejecutar generateFeatures.py <<path_images>>
-- >ejemplo: python Netflix.py images
+  >ejemplo: python Netflix.py images
 - Es necesario tener la carpeta features que se generó en el paso anterior y el archivo Netflix_data.json en el mismo directorio que Netflix.py
 - Para ejecutar $python Netflix.py <<path_imagen>>
   >ejemplo: python Netflix.py foto.jpg
