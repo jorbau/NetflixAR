@@ -1,10 +1,5 @@
 # Proyecto Psiv
 
-## Grupo
-
-- Javier Ortega
-- Roberto Manresa
-
 ## Información Importante para ejecutar
 - Para ejecutar los scripts hace falta python 3.7 con Opencv <= 3.4.2.16, ya que usa SIFT y este no está disponible en versiones superiores.
 ### reparación antes de ejecutar
@@ -18,4 +13,8 @@
 - El script get_data.py sirve para actualizar el archivo Netflix_data.json, pero es inutil si no se añaden las imagenes de las nuevas películas.
 - En la carpeta Resultados hay una excel con resultados obtenidos e imagenes de muestra de los resultados.
 
+ ## Grupo
+
+- Javier Ortega
+- Roberto Manresa
  
