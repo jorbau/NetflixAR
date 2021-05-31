@@ -4,7 +4,7 @@
 - Para ejecutar los scripts hace falta python 3.7 con Opencv <= 3.4.2.16, ya que usa SIFT y este no está disponible en versiones superiores.
 ### Preparación antes de ejecutar
 - Descomprimir carpeta images
--Ejecutar generateFeatures.py <path al directorio de las imagenes descomprimidas>
+- Ejecutar generateFeatures.py <path al directorio de las imagenes descomprimidas>
 - Es necesario tener la carpeta features que se generó en el paso anterior y el archivo Netflix_data.json en el mismo directorio que Netflix.py
 - Para ejecutar $python Netflix.py <path_imagen> 
   >ejemplo: python Netflix.py foto.jpg
