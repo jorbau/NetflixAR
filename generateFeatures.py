@@ -11,7 +11,7 @@ if len(sys.argv) == 2:
     path = cv2.imread(sys.argv[1])
 else:
     print ("ERROR: Imagen no encontrada")
-    exit
+    sys.exit
 
 try:
     shutil.rmtree(output[:-1])
