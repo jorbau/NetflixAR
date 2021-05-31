@@ -19,7 +19,6 @@ except OSError as e:
     pass
 os.mkdir(output)
 
-# featureSun: Calculate the number of feature points
 myList = os.listdir(path)
 images = []
 className = []
