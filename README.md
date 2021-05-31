@@ -1,7 +1,7 @@
-# NetflixAR
+# Proyecto-Bdnr
 
--Roberto Manresa Martinez
--Javier Ortega Bautista
+## Grupo
 
-Para ejecutar este proyecto se necesita una version de Opencv <= 3.4.2.16
+- Javier Ortega
+- Roberto Manresa
 
