@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import os
-from imutils.convenience import resize
 import time
 import json
 from itertools import compress
@@ -10,7 +9,13 @@ import sys
 from matplotlib import pyplot as plt
 import statistics as stats
 
-
+def get_coor(text, coor):
+    font = cv2.FONT_HERSHEY_COMPLEX
+    textsize = cv2.getTextSize(text, font, 2, 4)[0]
+    
+    textX = coor[0] - textsize[0]//2
+    textY = coor[1] + textsize[1]//2
+    return (textX, textY)
 
 with open('Netflix_data.json') as f:
   data = json.load(f)
@@ -23,18 +28,18 @@ myList = os.listdir(path)
 print('Total Classes Detectted: ', len(myList))
 for cl in myList:
     imgCur = cv2.imread(f'{path}/{cl}')
-    images.append(imgCur)
+    images.append([imgCur, cl[:cl.index(".")]])
     className.append(os.path.splitext(cl)[0])
 FLANN_INDEX_KDTREE = 1
 MIN_MATCH_COUNT = 10
 sift = cv2.xfeatures2d.SIFT_create(nfeatures=100000)
 
-img2 = cv2.imread("perspectiva2.jpeg")
-#img2 = cv2.resize(img2, (960, 540))  
+img2 = cv2.imread("javi1.jpeg")
 kp2, des2 = sift.detectAndCompute(img2, None)
-area_list= []
+area_list = []
 dst_list = []
-for img1 in images:
+name_list = []
+for img1, cl in images:
     try:
         kp1, des1 = sift.detectAndCompute(img1, None)
         index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
@@ -48,29 +53,67 @@ for img1 in images:
         if len(good)>MIN_MATCH_COUNT:
             src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
             dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
-            M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
+            M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
             matchesMask = mask.ravel().tolist()
             h,w,d = img1.shape
             pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+            if len(cv2.convexHull(pts, returnPoints = False)) != 4: continue
             dst = cv2.perspectiveTransform(pts,M)
             area_list.append((h-1)*(w-1))
             dst_list.append(dst)
-            #img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3, cv2.LINE_AA)
-        else:
-            #print( "Not enough matches are found - {}/{}".format(len(good), MIN_MATCH_COUNT) )
-            matchesMask = None
-        draw_params = dict(matchColor = (0,255,0), # draw matches in green color
-                   singlePointColor = None,
-                   matchesMask = matchesMask, # draw only inliers
-                   flags = 2)
-        #img3 = cv2.drawMatches(img1,kp1,img2,kp2,good,None,**draw_params)
+            name_list.append(cl)
     except:
         print('except')
+        
+
 area_list.sort()
 mediana = stats.median(area_list)
+overlay = img2.copy()
+score_info = []
 for i in range(len(area_list)-1):
     if area_list[i]<=mediana+10000 and area_list[i]>=mediana-10000:
-        img2 = cv2.polylines(img2,[np.int32(dst_list[i])],True,255,3, cv2.LINE_AA)
+        for dic in data:
+            if str(dic["id"]) == name_list[i]:
+                long = max(abs(dst_list[i][0][0][0] - dst_list[i][1][0][0]), 
+                           abs(dst_list[i][0][0][0] - dst_list[i][2][0][0]),
+                           abs(dst_list[i][0][0][0] - dst_list[i][3][0][0]),
+                           abs(dst_list[i][1][0][0] - dst_list[i][2][0][0]),
+                           abs(dst_list[i][1][0][0] - dst_list[i][3][0][0]),
+                           abs(dst_list[i][2][0][0] - dst_list[i][3][0][0]))
+                if long>0:
+                    text_len = len(dic['title'])
+                    text_size = cv2.getTextSize(dic['title'], cv2.FONT_HERSHEY_COMPLEX, 1, 2)[0][0]
+                    caracter = text_size/text_len
+                    cv2.putText(img2, dic['title'][:int(long/caracter)], tuple(dst_list[i][0][0]), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
+                    cv2.putText(img2, dic['title'][:int(long/caracter)], tuple(dst_list[i][0][0]), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 0), 1)
+                else:
+                    break
+                scr_pos = [0, 0]
+                for x in dst_list[i]:
+                    scr_pos[0] += int(x[0][0]/4)
+                    scr_pos[1] += int(x[0][1]/4)
+                
+                color = (0, 0, 255)
+                if 'score' in dic:
+                    score_info.append([str(dic['score']), tuple(scr_pos)])
+                    if dic['score'] >= 5:
+                        color = (0, 255, 0)
+                else:
+                    score_info.append(["Sin Nota", tuple(scr_pos)])
+                cv2.fillPoly(overlay, [np.int32(dst_list[i])], color)
+                break
+            
+        if str(dic["id"]) != name_list[i]:
+            cv2.putText(img2, "None", tuple(dst_list[i][0][0]), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
+            cv2.putText(img2, "None", tuple(dst_list[i][0][0]), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 0), 1)
+            cv2.fillPoly(overlay, [np.int32(dst_list[i])], (0, 0, 255))
+
+alpha = 0.4
+img2 = cv2.addWeighted(overlay, alpha, img2, 1, 0)
+for score, pos in score_info:
+    pos = get_coor(score, pos)
+    cv2.putText(img2, score, pos, cv2.FONT_HERSHEY_COMPLEX, 2, (255, 255, 255), 4)
+    cv2.putText(img2, score, pos, cv2.FONT_HERSHEY_COMPLEX, 2, (0, 0, 0), 2)
 
 
 
