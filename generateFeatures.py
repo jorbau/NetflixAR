@@ -8,7 +8,7 @@ import sys
 output= 'features/' 
 
 if len(sys.argv) == 2:
-    path = cv2.imread(sys.argv[1])
+    path = sys.argv[1]
 else:
     print ("ERROR: Imagen no encontrada")
     sys.exit
