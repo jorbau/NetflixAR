@@ -25,12 +25,12 @@ def load_file(cl):
                         _response=float(list[4]), _octave=int(list[5]), _class_id=int(list[6]))
             kps.append(kp)
         return kps, 'k'
-    
+
 
 def get_coor(text, coor):
     font = cv2.FONT_HERSHEY_COMPLEX
     textsize = cv2.getTextSize(text, font, 2, 4)[0]
-    
+
     textX = coor[0] - textsize[0]//2
     textY = coor[1] + textsize[1]//2
     return (textX, textY)
@@ -39,7 +39,7 @@ if len(sys.argv) == 2:
     img2 = cv2.imread(sys.argv[1])
 else:
     print ("ERROR: Imagen no encontrada")
-    exit
+    sys.exit
 
 
 
@@ -89,7 +89,7 @@ for cl, deslist, kplist in images:
         if len(good)>MIN_MATCH_COUNT:
             good_list.append(good)
             kp1_list.append(kp1)
-            
+
     if len(good_list)>0:
         good = good_list[0]
         kp1 = kp1_list[0]
@@ -97,7 +97,7 @@ for cl, deslist, kplist in images:
             if len(good_list[n])>len(good):
                 good = good_list[n]
                 kp1 = kp1_list[n]
-                
+
         try:
             src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
             dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
@@ -112,7 +112,7 @@ for cl, deslist, kplist in images:
             name_list.append(cl)
         except:
             print(cl)
-            
+
 area_list.sort()
 mediana = stats.median(area_list)
 overlay = img2.copy()
@@ -121,7 +121,7 @@ for i in range(len(area_list)-1):
     if area_list[i]<=mediana+10000 and area_list[i]>=mediana-10000:
         for dic in data:
             if str(dic["id"]) == name_list[i]:
-                long = max(abs(dst_list[i][0][0][0] - dst_list[i][1][0][0]), 
+                long = max(abs(dst_list[i][0][0][0] - dst_list[i][1][0][0]),
                            abs(dst_list[i][0][0][0] - dst_list[i][2][0][0]),
                            abs(dst_list[i][0][0][0] - dst_list[i][3][0][0]),
                            abs(dst_list[i][1][0][0] - dst_list[i][2][0][0]),
@@ -139,7 +139,7 @@ for i in range(len(area_list)-1):
                 for x in dst_list[i]:
                     scr_pos[0] += int(x[0][0]/4)
                     scr_pos[1] += int(x[0][1]/4)
-                
+
                 color = (255, 255, 255)
                 if 'score' in dic:
                     score_info.append([str(dic['score']), tuple(scr_pos)])
@@ -155,7 +155,7 @@ for i in range(len(area_list)-1):
                     score_info.append(["S.N.", tuple(scr_pos)])
                 cv2.fillPoly(overlay, [np.int32(dst_list[i])], color)
                 break
-        
+
 
 alpha = 0.6
 img2 = cv2.addWeighted(overlay, alpha, img2, 1, 0)
@@ -166,3 +166,4 @@ for score, pos in score_info:
 print("FIN")
 cv2.imwrite("resultado.jpg",img2)
 cv2.imshow("resultado",img2)
+cv2.waitKey(0)
