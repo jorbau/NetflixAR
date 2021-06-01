@@ -23,7 +23,6 @@ myList = os.listdir(path)
 images = []
 className = []
 detector = cv2.xfeatures2d.SIFT_create(nfeatures=10000)
-print('Total Classes Detectted: ', len(myList))
 for cl in myList:
     imgCur = cv2.imread(f'{path}/{cl}')
     images.append(imgCur)
