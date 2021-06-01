@@ -14,6 +14,7 @@
  - El dataset contiene solo imagenes de la categoría películas de anime de netflix, por lo que solo funciona en esa categoría, aunque es perfectamente ampliable.
 
 ## Información adicional
+- En la carpeta hay una imagen de prueba llamada Prueba.jpg
 - El script get_data.py sirve para actualizar el archivo Netflix_data.json, pero es inutil si no se añaden las imagenes de las nuevas películas.
 - En la carpeta Resultados hay una excel con resultados obtenidos e imagenes de muestra de los resultados.
 
