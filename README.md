@@ -9,6 +9,7 @@
 - Es necesario tener la carpeta features que se generó en el paso anterior y el archivo Netflix_data.json en el mismo directorio que Netflix.py
 - Para ejecutar $python Netflix.py <<path_imagen>>
   >ejemplo: python Netflix.py Prueba.jpg
+  
   >Se generará una imagen resultado.jpg
  - El dataset contiene solo imagenes de la categoría películas de anime de netflix, por lo que solo funciona en esa categoría, aunque es perfectamente ampliable.
 
